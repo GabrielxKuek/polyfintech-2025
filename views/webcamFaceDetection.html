@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="face-api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@latest/dist/face-api.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.css">
   <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
@@ -43,6 +43,8 @@
       height: 480px;
       object-fit: contain;
       display: block;
+      /* Mirror the video horizontally */
+      transform: scaleX(-1);
     }
     
     #overlay {
@@ -52,6 +54,8 @@
       pointer-events: none;
       width: 100%;
       height: 100%;
+      /* Mirror the overlay to match the video */
+      transform: scaleX(-1);
     }
     
     /* Game States */
@@ -338,7 +342,7 @@
     let gameEnded = false;
     let positionHoldTime = 0;
     let currentPosition = 'center';
-    let holdThreshold = 1000; // 2 seconds
+    let holdThreshold = 1000; // 1 second (changed from 2 seconds)
     let lastPositionTime = 0;
 
     // Face detection variables
@@ -367,10 +371,12 @@
       const canvas = document.getElementById('overlay');
       const canvasWidth = canvas.width;
       const centerX = canvasWidth / 2;
-      const threshold = canvasWidth * 0.15; // Changed from 0.25 to 0.15 (closer to center)
+      const threshold = canvasWidth * 0.15;
       
       console.log(`Face X: ${faceX}, Center: ${centerX}, Left threshold: ${centerX - threshold}, Right threshold: ${centerX + threshold}`);
       
+      // Since the video is mirrored, we DON'T need to invert the logic here
+      // The face-api detection coordinates are already in the mirrored space
       if (faceX < centerX - threshold) {
         return 'left';
       } else if (faceX > centerX + threshold) {
@@ -536,7 +542,7 @@
         const box = resizedResult.box;
         const faceX = box.x + box.width / 2;
         const centerX = canvas.width / 2;
-        const threshold = canvas.width * 0.15; // Changed from 0.25 to 0.15
+        const threshold = canvas.width * 0.15;
         
         ctx.strokeStyle = '#4488ff';
         ctx.lineWidth = 2;
